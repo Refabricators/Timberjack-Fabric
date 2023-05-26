@@ -1,0 +1,42 @@
+{
+	"schemaVersion": 1,
+	"id": "timberjack-refabricated",
+	"version": "${version}",
+	"name": "Timberjack-Refabricated",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"HadronCollision",
+		"TechPro424"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/Refabricators/Timberjack-Refabricated/"
+	},
+	"license": "Lesser General Public License v3.0 or later",
+	"icon": "assets/timberjack-refabricated/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"org.refabricators.Timberjack"
+		],
+		"client": [
+			"org.refabricators.TimberjackClient"
+		],
+		"fabric-datagen": [
+			"org.refabricators.TimberjackDataGenerator"
+		]
+	},
+	"mixins": [
+		"timberjack-refabricated.mixins.json",
+		{
+			"config": "timberjack-refabricated.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.14.20",
+		"minecraft": "1.19.4",
+		"java": ">=17",
+		"fabric-api": "*"
+	}
+}
