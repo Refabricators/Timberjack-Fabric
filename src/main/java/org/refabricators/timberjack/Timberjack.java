@@ -1,4 +1,4 @@
-package org.refabricators;
+package org.refabricators.timberjack;
 
 import net.fabricmc.api.ModInitializer;
 

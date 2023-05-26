@@ -17,13 +17,13 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"org.refabricators.Timberjack"
+			"org.refabricators.timberjack.Timberjack"
 		],
 		"client": [
-			"org.refabricators.TimberjackClient"
+			"org.refabricators.timberjack.TimberjackClient"
 		],
 		"fabric-datagen": [
-			"org.refabricators.TimberjackDataGenerator"
+			"org.refabricators.timberjack.TimberjackDataGenerator"
 		]
 	},
 	"mixins": [
