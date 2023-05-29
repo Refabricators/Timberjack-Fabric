@@ -3,7 +3,8 @@
 	"package": "org.refabricators.timberjack.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"ExampleMixin"
+		"ExampleMixin",
+		"FarmlandMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
