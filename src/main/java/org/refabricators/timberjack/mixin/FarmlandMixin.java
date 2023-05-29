@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 public abstract class FarmlandMixin {
     
     @Inject(method = "setToDirt", at = @At("HEAD"), cancellable = true)
-    private void dontTrample(@Nullable Entity entity, BlockState state, World world, BlockPos pos, CallbackInfo ci) {
+    private static void dontTrample(@Nullable Entity entity, BlockState state, World world, BlockPos pos, CallbackInfo ci) {
         if(entity instanceof TimberEntity) ci.cancel();
     }
 }
