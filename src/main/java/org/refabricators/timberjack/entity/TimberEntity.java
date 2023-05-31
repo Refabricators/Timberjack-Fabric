@@ -12,6 +12,7 @@ import net.minecraft.block.Material;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -29,12 +30,10 @@ import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
-public class TimberEntity extends Entity {
+public class TimberEntity extends FallingBlockEntity {
 
-    public static TrackedData<BlockPos> ORIGIN;
-    private BlockState fallingBlock = Blocks.OAK_LOG.getDefaultState(); //TODO
-    private int fallTime;
-    public boolean shouldDropItem = true;
+    public static TrackedData<BlockPos> ORIGIN = DataTracker.registerData(TimberEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
+    private BlockState fallingBlock = Blocks.SAND.getDefaultState(); //TODO
     private boolean hurtEntities;
     private boolean log;
     private int fallHurtMax = 40;
@@ -45,13 +44,13 @@ public class TimberEntity extends Entity {
     private boolean isDead = false;
 
 
-    public TimberEntity(EntityType<?> type, World world) {
+    public TimberEntity(EntityType<? extends FallingBlockEntity> type, World world) {
         super(type, world);
        
     }
 
-    public TimberEntity(World worldIn, double x, double y, double z, BlockState fallingBlockState, Direction fellingDirection, boolean log, EntityType<?> type) {
-        this(type, worldIn);
+    public TimberEntity(World worldIn, double x, double y, double z, BlockState fallingBlockState, Direction fellingDirection, boolean log, EntityType<? extends FallingBlockEntity> type) {
+        super(type, worldIn);
         this.fallingBlock = fallingBlockState;
         this.fellingDirection = fellingDirection;
         this.log = log;
@@ -61,6 +60,19 @@ public class TimberEntity extends Entity {
         this.prevZ = z;
         this.movementMultiplier = new Vec3d(0.0D, 0.0D, 0.0D);
         this.setOrigin(this.getBlockPos());
+    }
+
+    public Vec3d getMovementMultiplier() {
+        return this.movementMultiplier;
+    }
+
+    public void setMovementMultiplier(Vec3d movementMultiplier) {
+        this.movementMultiplier = movementMultiplier;
+    }
+
+    public void setMovementMultiplier(double x, double y, double z) {
+        Vec3d movementMultiplier = new Vec3d(x, y, z);
+        this.setMovementMultiplier(movementMultiplier);
     }
 
     {
@@ -76,7 +88,7 @@ public class TimberEntity extends Entity {
     }
 
     protected void entityInit() {
-        this.dataTracker.startTracking(ORIGIN, BlockPos.ORIGIN);
+        
     }
 
     @Override
@@ -96,7 +108,7 @@ public class TimberEntity extends Entity {
             this.prevY = this.getY();
             this.prevZ = this.getZ();
 
-            if (this.fallTime++ == 0) {
+            if (this.timeFalling++ == 0) {
                 BlockPos currentPos = new BlockPos(this.getBlockPos());
 
                 BlockState state = this.world.getBlockState(currentPos);
@@ -163,12 +175,12 @@ public class TimberEntity extends Entity {
                                 rotateLog(state, currentPos);
                             }
 
-                        } else if (this.shouldDropItem && doTileDrops()) {
+                        } else if (this.dropItem && doTileDrops()) {
                             dropItems();
                         }
                     }
-                } else if (this.fallTime > 100 && (currentPos.getY() < 1 || currentPos.getY() > 256) || this.fallTime > 400) {
-                    if (this.shouldDropItem && doTileDrops()) {
+                } else if (this.timeFalling > 100 && (currentPos.getY() < 1 || currentPos.getY() > 256) || this.timeFalling > 400) {
+                    if (this.dropItem && doTileDrops()) {
                         dropItems();
                     }
 
@@ -258,11 +270,17 @@ public class TimberEntity extends Entity {
         || block == Blocks.ACACIA_LOG || block == Blocks.DARK_OAK_LOG || block == Blocks.JUNGLE_LOG;
     }
 
+    public void setDead() {
+        this.setRemoved(RemovalReason.DISCARDED);
+        this.isDead = true;
+    }
+
 
     
     @Override
     protected void initDataTracker() {
-       ORIGIN = DataTracker.registerData(TimberEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
+       super.initDataTracker();
+       this.dataTracker.startTracking(ORIGIN, BlockPos.ORIGIN);
     }
 
     @Override
@@ -271,8 +289,8 @@ public class TimberEntity extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound var1) {
-
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
+        nbt.putBoolean("hurtEntities", collidedSoftly);
     }
 
     @Override
