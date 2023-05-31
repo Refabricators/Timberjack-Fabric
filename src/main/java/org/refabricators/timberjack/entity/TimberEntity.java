@@ -33,7 +33,7 @@ import net.minecraft.world.World;
 public class TimberEntity extends FallingBlockEntity {
 
     public static TrackedData<BlockPos> ORIGIN = DataTracker.registerData(TimberEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
-    private BlockState fallingBlock = Blocks.SAND.getDefaultState(); //TODO
+    private BlockState fallingBlock = Blocks.SAND.getDefaultState();
     private boolean hurtEntities;
     private boolean log;
     private int fallHurtMax = 40;

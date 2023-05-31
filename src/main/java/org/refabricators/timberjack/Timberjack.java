@@ -11,9 +11,9 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
-import org.refabricators.timberjack.config.JsonOperations;
 import org.refabricators.timberjack.entity.TimberEntity;
 import org.refabricators.timberjack.events.BlockBreakEvent;
+import org.refabricators.timberjack.events.EntityJoinWorldEvent;
 import org.refabricators.timberjack.events.ServerTickEvent;
 
 import org.slf4j.Logger;
@@ -37,8 +37,7 @@ public class Timberjack implements ModInitializer {
     public void onInitialize() {
         ServerTickEvent.registerServerTickEvent();
         BlockBreakEvent.registerBlockBreakEvent();
-
-        JsonOperations.loadConfigFromFile();
+        EntityJoinWorldEvent.registerEntityJoinWorldEvent();
 
         // This code runs as soon as Minecraft is in a mod-load-ready state.
         // However, some things (like resources) may still be uninitialized.

@@ -14,7 +14,7 @@ import com.google.gson.Gson;
 public class JsonOperations {
     public static Config config;
     private final static File settingsFile = new File(FabricLoader.getInstance().getConfigDir().toString() + "/timberjack.json");
-    private final static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final static Gson gson = new GsonBuilder().registerTypeAdapter(Config.class, new ConfigTypeAdapter()).setPrettyPrinting().create();
 
     public static Config loadConfigFromFile() {
         try {
@@ -22,6 +22,7 @@ public class JsonOperations {
                 Config.class);
         } catch (Exception ex) {
             System.out.println("Error while loading config! Creating a new one!");
+            ex.printStackTrace();
             config = new Config();
             writeConfig();
         }
