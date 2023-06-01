@@ -15,21 +15,21 @@ public class ConfigTypeAdapter extends TypeAdapter<Config> {
         while (in.hasNext()) {
             switch (in.nextName()) {
             case "maxLogsProcessed":
-            Config.maxLogsProcessed = in.nextInt();
+            config.maxLogsProcessed = in.nextInt();
               break;
             case "canFellLargeTrees":
-              Config.canFellLargeTrees = in.nextBoolean();
+              config.canFellLargeTrees = in.nextBoolean();
               break;
             case "aggressiveHouseProtection":
-              Config.aggressiveHouseProtection = in.nextBoolean();
+              config.aggressiveHouseProtection = in.nextBoolean();
               break;
             case "sneakingPreventsFelling":
-              Config.sneakingPreventsFelling = in.nextBoolean();
+              config.sneakingPreventsFelling = in.nextBoolean();
               break;
-            case "authors":
+            case "logBlacklist":
                 in.beginArray();
                 while (in.hasNext()) {
-                    Config.logBlacklist.add(in.nextString());
+                    config.logBlacklist.add(in.nextString());
                 }
                 in.endArray();
               break;
@@ -40,15 +40,15 @@ public class ConfigTypeAdapter extends TypeAdapter<Config> {
     }
 
     @Override
-    public void write(final JsonWriter out, final Config config) throws IOException {
+    public void write(final JsonWriter out, Config config) throws IOException {
         out.beginObject();
-        out.name("maxLogsProcessed").value(Config.getMaxLogsProcessed());
-        out.name("canFellLargeTrees").value(Config.canFellLargeTrees());
-        out.name("aggressiveHouseProtection").value(Config.aggressiveHouseProtection());
-        out.name("sneakingPreventsFelling").value(Config.sneakingPreventsFelling());
+        out.name("maxLogsProcessed").value(config.maxLogsProcessed);
+        out.name("canFellLargeTrees").value(config.canFellLargeTrees);
+        out.name("aggressiveHouseProtection").value(config.aggressiveHouseProtection);
+        out.name("sneakingPreventsFelling").value(config.sneakingPreventsFelling);
         out.name("logBlacklist").beginArray();
 
-        for (String logName : Config.logBlacklist) {
+        for (String logName : config.logBlacklist) {
             out.value(logName);
         }
         out.endArray();
