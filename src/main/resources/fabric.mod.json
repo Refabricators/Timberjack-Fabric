@@ -2,7 +2,7 @@
 	"schemaVersion": 1,
 	"id": "timberjack-refabricated",
 	"version": "${version}",
-	"name": "Timberjack-Refabricated",
+	"name": "Timberjack Refabricated",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
 		"HadronCollision",
