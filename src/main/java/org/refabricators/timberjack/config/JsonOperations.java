@@ -1,6 +1,5 @@
 package org.refabricators.timberjack.config;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,29 +19,29 @@ public class JsonOperations {
     private final static Gson gson = new GsonBuilder().registerTypeAdapter(Config.class, new ConfigTypeAdapter()).setPrettyPrinting().create();
 
     public static Config loadConfigFromFile() {
-        try (JsonReader reader = new JsonReader(Files.newBufferedReader(configPath))) { 
+        if (Files.notExists(configPath)) writeConfig();
 
-            if (Files.notExists(configPath)) writeConfig();
+        try (JsonReader reader = new JsonReader(Files.newBufferedReader(configPath))) {
             config = gson.fromJson(reader, Config.class);
-                 
-        } catch (Exception e) {
 
+        } catch (Exception e) {
             Timberjack.LOGGER.info("Error while loading config, maybe you should check the mod's config file to see if it has any syntax errors.");
             e.printStackTrace();
             throw new RuntimeException("(timberjack-refabricated) Error while loading config, maybe you should check the mod's config file to see if it has any syntax errors.");
-
         }
+
         return config;
     }
 
     public static void writeConfig() {
+
         try {
-
             Files.deleteIfExists(configPath);
-            Files.write(configPath, gson.toJson(config).getBytes(StandardCharsets.UTF_8));
-
-        } catch (IOException e) {
+            Files.write(configPath, gson.toJson(new Config()).getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            Timberjack.LOGGER.info("Error while writing config"); //TODO ask users to report on gh or discord
             e.printStackTrace();
         }
+        
     }
 }
