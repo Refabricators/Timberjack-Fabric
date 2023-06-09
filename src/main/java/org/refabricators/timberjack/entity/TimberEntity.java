@@ -18,7 +18,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
@@ -246,7 +245,7 @@ public class TimberEntity extends FallingBlockEntity {
         ArrayList<ItemStack> itemsToDrop = new ArrayList<>();
         itemsToDrop.addAll(this.drops);
         itemsToDrop.forEach(d -> this.dropStack(d, 0.0F));
-        
+
     }
 
     public void fall(float distance, float damageMultiplier) {
