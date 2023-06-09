@@ -113,7 +113,7 @@ public class TimberEntity extends FallingBlockEntity {
 
                 BlockState state = this.world.getBlockState(currentPos);
                 if (state.getBlock() == block) {
-                    if (!this.world.isClient() && !log) {
+                    if (!this.world.isClient()) {
                         drops.addAll(Block.getDroppedStacks(state, (ServerWorld) world, currentPos, null));
                     }
                     this.world.setBlockState(currentPos, Blocks.AIR.getDefaultState());
@@ -242,13 +242,11 @@ public class TimberEntity extends FallingBlockEntity {
     }
 
     private void dropItems() {
+
         ArrayList<ItemStack> itemsToDrop = new ArrayList<>();
-        if (log) {
-            itemsToDrop.add(new ItemStack(Items.STICK, this.world.getRandom().nextInt(4) + 1));
-        } else {
-            itemsToDrop.addAll(this.drops);
-        }
+        itemsToDrop.addAll(this.drops);
         itemsToDrop.forEach(d -> this.dropStack(d, 0.0F));
+        
     }
 
     public void fall(float distance, float damageMultiplier) {
