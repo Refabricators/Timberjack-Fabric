@@ -7,9 +7,8 @@ import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.CropBlock;
 import net.minecraft.block.FallingBlock;
-import net.minecraft.block.LeavesBlock;
+import net.minecraft.block.Material;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -100,8 +99,10 @@ public class TimberEntity extends FallingBlockEntity {
     public void tick() {
         Block block = this.fallingBlock.getBlock();
 
-        if (this.fallingBlock.isAir()) this.setDead();
-        else {
+        if (this.fallingBlock.getMaterial() == Material.AIR) {
+            this.setRemoved(RemovalReason.DISCARDED);
+            this.isDead = true;
+        } else {
             this.prevX = this.getX();
             this.prevY = this.getY();
             this.prevZ = this.getZ();
@@ -109,13 +110,13 @@ public class TimberEntity extends FallingBlockEntity {
             if (this.timeFalling++ == 0) {
                 BlockPos currentPos = new BlockPos(this.getBlockPos());
 
-                BlockState state = this.getWorld().getBlockState(currentPos);
+                BlockState state = this.world.getBlockState(currentPos);
                 if (state.getBlock() == block) {
-                    if (!this.getWorld().isClient()) {
-                        drops.addAll(Block.getDroppedStacks(state, (ServerWorld) getWorld(), currentPos, null));
+                    if (!this.world.isClient()) {
+                        drops.addAll(Block.getDroppedStacks(state, (ServerWorld) world, currentPos, null));
                     }
-                    this.getWorld().setBlockState(currentPos, Blocks.AIR.getDefaultState());
-                } else if (!this.getWorld().isClient()) {
+                    this.world.setBlockState(currentPos, Blocks.AIR.getDefaultState());
+                } else if (!this.world.isClient()) {
                     this.setRemoved(RemovalReason.DISCARDED);
                     this.isDead = true;
                     return;
@@ -131,17 +132,17 @@ public class TimberEntity extends FallingBlockEntity {
             this.movementMultiplier = new Vec3d(movementMultiplier.x, movementMultiplier.y * 0.98D, movementMultiplier.z);
 //            this.motionZ *= 0.9800000190734863D;
 
-            if (!this.getWorld().isClient()) {
+            if (!this.world.isClient()) {
                 BlockPos currentPos = new BlockPos(getBlockPos());
 
                 BlockPos belowPos = new BlockPos(this.getBlockX(), Double.valueOf(this.getBlockY() - 0.001).intValue(), this.getBlockZ());
-                if (this.isOnGround() && isBlocked(belowPos)) {
+                if (this.onGround && isBlocked(belowPos)) {
                     if (canBreakThrough(belowPos)) {
-                        getWorld().breakBlock(belowPos, doTileDrops());
+                        world.breakBlock(belowPos, doTileDrops());
                         return;
                     }
 
-                    BlockState occupiedState = this.getWorld().getBlockState(currentPos);
+                    BlockState occupiedState = this.world.getBlockState(currentPos);
 
                     this.movementMultiplier = new Vec3d(0.699999988079071D, 0.699999988079071D, -0.5D);
 
@@ -168,7 +169,7 @@ public class TimberEntity extends FallingBlockEntity {
                                     this.readCustomDataFromNbt(nbt);            
                             }
 
-                            BlockState state = this.getWorld().getBlockState(currentPos);
+                            BlockState state = world.getBlockState(currentPos);
                             if (log) {
                                 rotateLog(state, currentPos);
                             }
@@ -190,13 +191,13 @@ public class TimberEntity extends FallingBlockEntity {
     }
 
     private boolean placeBlock(BlockState occupiedState, BlockPos currentPos) {
-        this.getWorld().breakBlock(currentPos, doTileDrops());
-        return getWorld().setBlockState(currentPos, this.fallingBlock, 3);
+        world.breakBlock(currentPos, doTileDrops());
+        return world.setBlockState(currentPos, this.fallingBlock, 3);
     }
 
     private boolean canPlaceBlock(BlockState occupiedState, BlockPos currentPos) {
-        return (getWorld().isInBuildLimit(currentPos) && World.isValid(currentPos))
-                || (log && occupiedState.getBlock() instanceof LeavesBlock);
+        return (world.isInBuildLimit(currentPos) && World.isValid(currentPos))
+                || (log && occupiedState.getMaterial() == Material.LEAVES);
     }
 
     private void rotateLog(BlockState state, BlockPos pos) {
@@ -215,28 +216,28 @@ public class TimberEntity extends FallingBlockEntity {
             }
             if (axis != Direction.Axis.Y) {
                 BlockState newState = state.with(PillarBlock.AXIS, axis);
-                getWorld().setBlockState(pos, newState);
+                world.setBlockState(pos, newState);
             }
         }
     }
 
     private boolean doTileDrops() {
-        return getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS);
+        return world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS);
     }
 
     private boolean isBlocked(BlockPos pos) {
-        BlockState state = this.getWorld().getBlockState(pos);
+        BlockState state = this.world.getBlockState(pos);
         return !FallingBlock.canFallThrough(state);
     }
 
     private boolean canBreakThrough(BlockPos pos) {
-        BlockState state = this.getWorld().getBlockState(pos);
-        Block block = state.getBlock();
-
-        if (block instanceof CropBlock) return true;
-        if (!log) return false;
-
-        return block instanceof LeavesBlock || block instanceof CropBlock;
+        BlockState state = this.world.getBlockState(pos);
+        Material material = state.getMaterial();
+        if (material == Material.PLANT)
+            return true;
+        if (!log)
+            return false;
+        return material == Material.LEAVES || material == Material.PLANT || state.getBlock().getDefaultState().getMaterial() == Material.LEAVES;
     }
 
     private void dropItems() {
@@ -252,10 +253,10 @@ public class TimberEntity extends FallingBlockEntity {
             int i = MathHelper.ceil(distance - 1.0F);
 
             if (i > 0) {
-                ArrayList<Entity> list = Lists.newArrayList(this.getWorld().getOtherEntities(this, this.getBoundingBox()));
+                ArrayList<Entity> list = Lists.newArrayList(this.world.getOtherEntities(this, this.getBoundingBox()));
 
                 for (Entity entity : list) {
-                    entity.damage(entity.getWorld().getDamageSources().fallingBlock(this), (float) Math.min(MathHelper.floor((float) i * this.fallHurtAmount), this.fallHurtMax));
+                    entity.damage(entity.method_48926().getDamageSources().fallingBlock(this), (float) Math.min(MathHelper.floor((float) i * this.fallHurtAmount), this.fallHurtMax));
                 }
             }
         }

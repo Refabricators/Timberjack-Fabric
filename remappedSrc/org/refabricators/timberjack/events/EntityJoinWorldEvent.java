@@ -5,7 +5,7 @@ import org.refabricators.timberjack.entity.TimberEntity;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.LeavesBlock;
+import net.minecraft.block.Material;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.Entity.RemovalReason;
 
@@ -14,7 +14,7 @@ public class EntityJoinWorldEvent {
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
             if(!(entity instanceof FallingBlockEntity)) return;
             FallingBlockEntity falling = (FallingBlockEntity)entity;
-            if(isLog(falling.getBlockState().getBlock()) || falling.getBlockState().getBlock() instanceof LeavesBlock) {
+            if(isLog(falling.getBlockState().getBlock()) || falling.getBlockState().getMaterial() == Material.LEAVES) {
                 
                 if (falling.timeFalling > 600) {
                     if(falling instanceof TimberEntity) ((TimberEntity)falling).setDead();

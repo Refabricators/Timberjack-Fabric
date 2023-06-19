@@ -8,13 +8,10 @@ import org.refabricators.timberjack.Timberjack;
 import org.refabricators.timberjack.config.Config;
 import org.refabricators.timberjack.entity.TimberEntity;
 
-import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.BrewingStandBlock;
-import net.minecraft.block.CarpetBlock;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.ComparatorBlock;
 import net.minecraft.block.CraftingTableBlock;
@@ -22,23 +19,19 @@ import net.minecraft.block.DoorBlock;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.FurnaceBlock;
 import net.minecraft.block.GlassBlock;
-import net.minecraft.block.GrindstoneBlock;
 import net.minecraft.block.HopperBlock;
 import net.minecraft.block.LeavesBlock;
+import net.minecraft.block.Material;
 import net.minecraft.block.ObserverBlock;
 import net.minecraft.block.PaneBlock;
-import net.minecraft.block.PistonBlock;
-import net.minecraft.block.PistonExtensionBlock;
-import net.minecraft.block.PistonHeadBlock;
-import net.minecraft.block.RedstoneLampBlock;
 import net.minecraft.block.RedstoneTorchBlock;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.block.RepeaterBlock;
 import net.minecraft.block.SignBlock;
-import net.minecraft.block.SmithingTableBlock;
 import net.minecraft.block.StainedGlassBlock;
 import net.minecraft.block.StainedGlassPaneBlock;
 import net.minecraft.block.TrapdoorBlock;
+
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -48,15 +41,12 @@ import net.minecraft.world.World;
 
 public class TimberjackUtils {
     private static HashSet<Class<? extends Block>> houseBlocks = new HashSet<>();
+    private static HashSet<Material> houseMaterials = new HashSet<>();
 
     static {
         houseBlocks.add(DoorBlock.class);
         houseBlocks.add(BedBlock.class);
         houseBlocks.add(CraftingTableBlock.class);
-        houseBlocks.add(AnvilBlock.class);
-        houseBlocks.add(GrindstoneBlock.class);
-        houseBlocks.add(SmithingTableBlock.class);
-        houseBlocks.add(BrewingStandBlock.class);
         houseBlocks.add(SignBlock.class);
         houseBlocks.add(FurnaceBlock.class);
         houseBlocks.add(TrapdoorBlock.class);
@@ -73,12 +63,11 @@ public class TimberjackUtils {
         houseBlocks.add(HopperBlock.class);
         houseBlocks.add(ChestBlock.class);
 
-        houseBlocks.add(PistonBlock.class);
-        houseBlocks.add(PistonExtensionBlock.class);
-        houseBlocks.add(PistonHeadBlock.class);
-
-        houseBlocks.add(RedstoneLampBlock.class);
-        houseBlocks.add(CarpetBlock.class);
+        houseMaterials.add(Material.GLASS);
+        houseMaterials.add(Material.REPAIR_STATION);
+        houseMaterials.add(Material.PISTON);
+        houseMaterials.add(Material.REDSTONE_LAMP);
+        houseMaterials.add(Material.CARPET);
     }
 
     static void iterateBlocks(int range, BlockPos center, Consumer<BlockPos.Mutable> action) {
@@ -110,6 +99,8 @@ public class TimberjackUtils {
     static boolean isHouse(BlockState state, World world, BlockPos pos) {
         if (!Config.aggressiveHouseProtection())
             return false;
+        if (houseMaterials.contains(state.getMaterial()))
+            return true;
         Class<?> blockClass = state.getBlock().getClass();
         while (blockClass != Block.class) {
             if (houseBlocks.contains(blockClass))
@@ -128,7 +119,7 @@ public class TimberjackUtils {
         BlockState belowState = world.getBlockState(pos);
         boolean canFall = belowState.isAir()
                 || belowState.getBlock() instanceof Fertilizable
-                || belowState.isReplaceable()
+                || belowState.getMaterial().isReplaceable()
                 || logPos.equals(pos);
         pos.move(Direction.UP);
 
