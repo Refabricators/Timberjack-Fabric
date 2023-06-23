@@ -87,7 +87,7 @@ public class Tree {
         this.choppedBlock = choppedBlock;
         this.fellingDirection = fellingDirection;
         this.logBlock = logBlock;
-        makeBranch(choppedBlock, logBlock);
+        makeBranch(choppedBlock);
     }
 
     boolean contains(BlockPos pos) {
@@ -155,7 +155,7 @@ public class Tree {
     }
 
     private void scanNewBranch(BlockPos pos, Block logBlock) {
-        Branch branch = makeBranch(pos, logBlock);
+        Branch branch = makeBranch(pos);
         branch.scan();
     }
 
@@ -175,8 +175,8 @@ public class Tree {
         });
     }
 
-    Branch makeBranch(BlockPos pos, Block logBlock) {
-        Branch branch = new Branch(this, pos, logBlock);
+    Branch makeBranch(BlockPos pos) {
+        Branch branch = new Branch(this, pos);
         branches.add(branch);
         return branch;
     }
@@ -186,14 +186,12 @@ public class Tree {
 public class Branch {
 
     private HashSet<BlockPos> logs = new HashSet<>();
-    private Block logBlock;
     private final Tree tree;
     private final BlockPos start;
     private boolean hasLeaves;
     private boolean rooted;
 
-    Branch(Tree tree, BlockPos start, Block logBlock) {
-        this.logBlock = logBlock;
+    Branch(Tree tree, BlockPos start) {
         this.tree = tree;
         this.start = start;
         addLog(new BlockPos.Mutable(start.getX(), start.getY(), start.getZ()));
