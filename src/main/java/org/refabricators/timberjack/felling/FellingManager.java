@@ -17,6 +17,7 @@ import net.minecraft.util.math.Vec3d;
 
 import com.google.common.collect.MapMaker;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -64,8 +65,8 @@ public class FellingManager {
     });
 }
 
-public void onChop(BlockPos pos, Direction fellingDirection) {
-    Tree tree = new Tree(pos, fellingDirection);
+public void onChop(BlockPos pos, Direction fellingDirection, Block logBlock) {
+    Tree tree = new Tree(pos, fellingDirection, logBlock);
     tree.buildTree();
     tree.queueForFelling();
 }
@@ -73,6 +74,7 @@ public void onChop(BlockPos pos, Direction fellingDirection) {
 public class Tree {
 
     private Collection<Branch> branches = new ConcurrentLinkedQueue<>();
+    private Block logBlock;
     private HashSet<BlockPos> logs = new HashSet<>();
     LinkedList<BlockPos> logsToFell = new LinkedList<>();
     private LinkedList<BlockPos> newLogsToFell = new LinkedList<>();
@@ -81,10 +83,11 @@ public class Tree {
     private boolean isTreehouse;
     private final Direction fellingDirection;
 
-    Tree(BlockPos choppedBlock, Direction fellingDirection) {
+    Tree(BlockPos choppedBlock, Direction fellingDirection, Block logBlock) {
         this.choppedBlock = choppedBlock;
         this.fellingDirection = fellingDirection;
-        makeBranch(choppedBlock);
+        this.logBlock = logBlock;
+        makeBranch(choppedBlock, logBlock);
     }
 
     boolean contains(BlockPos pos) {
@@ -145,14 +148,14 @@ public class Tree {
             if (!contains(targetPos)) {
                 BlockState targetState = world.getBlockState(targetPos);
                 if (TimberjackUtils.isWood(targetState)) {
-                    scanNewBranch(targetPos.toImmutable());
+                    scanNewBranch(targetPos.toImmutable(), logBlock);
                 }
             }
         });
     }
 
-    private void scanNewBranch(BlockPos pos) {
-        Branch branch = makeBranch(pos);
+    private void scanNewBranch(BlockPos pos, Block logBlock) {
+        Branch branch = makeBranch(pos, logBlock);
         branch.scan();
     }
 
@@ -161,19 +164,19 @@ public class Tree {
     }
 
     private void fellLog(BlockPos logPos) {
-        TimberjackUtils.spawnFallingLog(world, logPos, centroid, fellingDirection);
+        TimberjackUtils.spawnFallingLog(world, logPos, centroid, fellingDirection, logBlock);
         TimberjackUtils.iterateBlocks(4, logPos, targetPos -> {
             BlockState targetState = world.getBlockState(targetPos);
             if (TimberjackUtils.isLeaves(targetState)) {
-                TimberjackUtils.spawnFallingLeaves(world, targetPos, logPos, centroid, targetState, fellingDirection);
+                TimberjackUtils.spawnFallingLeaves(world, targetPos, logPos, centroid, targetState, fellingDirection, targetState.getBlock());
             } else if (TimberjackUtils.isWood(targetState) && !contains(targetPos)) {
-                scanNewBranch(targetPos.toImmutable());
+                scanNewBranch(targetPos.toImmutable(), logBlock);
             }
         });
     }
 
-    Branch makeBranch(BlockPos pos) {
-        Branch branch = new Branch(this, pos);
+    Branch makeBranch(BlockPos pos, Block logBlock) {
+        Branch branch = new Branch(this, pos, logBlock);
         branches.add(branch);
         return branch;
     }
@@ -183,12 +186,14 @@ public class Tree {
 public class Branch {
 
     private HashSet<BlockPos> logs = new HashSet<>();
+    private Block logBlock;
     private final Tree tree;
     private final BlockPos start;
     private boolean hasLeaves;
     private boolean rooted;
 
-    Branch(Tree tree, BlockPos start) {
+    Branch(Tree tree, BlockPos start, Block logBlock) {
+        this.logBlock = logBlock;
         this.tree = tree;
         this.start = start;
         addLog(new BlockPos.Mutable(start.getX(), start.getY(), start.getZ()));

@@ -96,7 +96,8 @@ public class TimberjackUtils {
     public static boolean isWood(BlockState state) {
         Block block = state.getBlock();
         return block == Blocks.OAK_LOG || block == Blocks.BIRCH_LOG || block == Blocks.SPRUCE_LOG
-        || block == Blocks.ACACIA_LOG || block == Blocks.DARK_OAK_LOG || block == Blocks.JUNGLE_LOG;
+        || block == Blocks.ACACIA_LOG || block == Blocks.DARK_OAK_LOG || block == Blocks.JUNGLE_LOG
+        || block == Blocks.CHERRY_LOG;
     }
 
     static boolean isLeaves(BlockState state) {
@@ -119,11 +120,11 @@ public class TimberjackUtils {
         return false;
     }
 
-    static void spawnFallingLog(World world, BlockPos logPos, Vec3d centroid, Direction fellingDirection) {
-        spawnFalling(world, logPos, centroid, world.getBlockState(logPos), fellingDirection, true);
+    static void spawnFallingLog(World world, BlockPos logPos, Vec3d centroid, Direction fellingDirection, Block logBlock) {
+        spawnFalling(world, logPos, centroid, world.getBlockState(logPos), fellingDirection, true, logBlock);
     }
 
-    static void spawnFallingLeaves(World world, BlockPos.Mutable pos, BlockPos logPos, Vec3d centroid, BlockState state, Direction fellingDirection) {
+    static void spawnFallingLeaves(World world, BlockPos.Mutable pos, BlockPos logPos, Vec3d centroid, BlockState state, Direction fellingDirection, Block logBlock) {
         pos.move(Direction.DOWN);
         BlockState belowState = world.getBlockState(pos);
         boolean canFall = belowState.isAir()
@@ -132,11 +133,11 @@ public class TimberjackUtils {
                 || logPos.equals(pos);
         pos.move(Direction.UP);
 
-        if (canFall) spawnFalling(world, pos, centroid, state, fellingDirection, false);
+        if (canFall) spawnFalling(world, pos, centroid, state, fellingDirection, false, logBlock);
     }
 
-    private static void spawnFalling(World world, BlockPos pos, Vec3d centroid, BlockState state, Direction fellingDirection, boolean log) {
-        TimberEntity entity = new TimberEntity(world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, state, fellingDirection, log, Timberjack.TIMBER_ENTITY);
+    private static void spawnFalling(World world, BlockPos pos, Vec3d centroid, BlockState state, Direction fellingDirection, boolean log, Block logBlock) {
+        TimberEntity entity = new TimberEntity(world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, state, fellingDirection, log, Timberjack.TIMBER_ENTITY, logBlock);
         Vec3d vector = new Vec3d(pos.getX(), 0, pos.getZ());
         vector = vector.subtract(centroid.x, 0, centroid.z);
 

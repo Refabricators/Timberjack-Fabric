@@ -2,6 +2,9 @@ package org.refabricators.timberjack.entity;
 
 import java.util.ArrayList;
 
+import org.jetbrains.annotations.Nullable;
+import org.refabricators.timberjack.mixin.FallingBlockEntityAccessor;
+
 import com.google.common.collect.Lists;
 
 import net.minecraft.block.Block;
@@ -33,7 +36,7 @@ import net.minecraft.world.World;
 public class TimberEntity extends FallingBlockEntity {
 
     public static TrackedData<BlockPos> ORIGIN = DataTracker.registerData(TimberEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
-    private BlockState fallingBlock = Blocks.SAND.getDefaultState();
+    private BlockState fallingBlock = this.getBlockState();
     private boolean hurtEntities;
     private boolean log;
     private int fallHurtMax = 40;
@@ -49,8 +52,9 @@ public class TimberEntity extends FallingBlockEntity {
        
     }
 
-    public TimberEntity(World worldIn, double x, double y, double z, BlockState fallingBlockState, Direction fellingDirection, boolean log, EntityType<? extends FallingBlockEntity> type) {
+    public TimberEntity(World worldIn, double x, double y, double z, BlockState fallingBlockState, Direction fellingDirection, boolean log, EntityType<? extends FallingBlockEntity> type, Block logBlock) {
         super(type, worldIn);
+        ((FallingBlockEntityAccessor)this).setBlock(logBlock.getDefaultState());
         this.fallingBlock = fallingBlockState;
         this.fellingDirection = fellingDirection;
         this.log = log;
@@ -287,6 +291,11 @@ public class TimberEntity extends FallingBlockEntity {
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
         nbt.putBoolean("hurtEntities", collidedSoftly);
+    }
+
+    @Nullable
+    public BlockState getBlock() {
+        return this.fallingBlock;
     }
 
     @Override

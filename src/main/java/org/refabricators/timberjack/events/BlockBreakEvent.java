@@ -22,7 +22,7 @@ public class BlockBreakEvent {
                     if (fellingDirection.getAxis() == Direction.Axis.Y)
                         fellingDirection = getRandomHorizontalFacing();
                 }
-                FellingManager.fellingManagers.computeIfAbsent(world, FellingManager::new).onChop(pos, fellingDirection);
+                FellingManager.fellingManagers.computeIfAbsent(world, FellingManager::new).onChop(pos, fellingDirection, state.getBlock());
             }
         });
     }
