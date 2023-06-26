@@ -1,10 +1,11 @@
 package org.refabricators.timberjack.config;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.Registries;
+
+import com.google.common.collect.Lists;
 
 public class Config {
     
@@ -12,8 +13,8 @@ public class Config {
     boolean canFellLargeTrees = false;
     boolean aggressiveHouseProtection = true;
     boolean sneakingPreventsFelling = true;
-    ArrayList<String> logBlacklist = new ArrayList<String>(Arrays.asList("natura:redwood_logs", 
-        "biomesoplenty:log_0#4", "forestry:logs.6#0", "forestry:logs.fireproof.6#0"));
+    ArrayList<String> logBlacklist = Lists.newArrayList("natura:redwood_logs", 
+        "biomesoplenty:log_0#4", "forestry:logs.6#0", "forestry:logs.fireproof.6#0");
 
     public static Config instance = JsonOperations.loadConfigFromFile();
 

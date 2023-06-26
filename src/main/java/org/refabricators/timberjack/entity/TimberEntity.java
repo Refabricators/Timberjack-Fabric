@@ -10,27 +10,18 @@ import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.CropBlock;
-import net.minecraft.block.FallingBlock;
-import net.minecraft.block.LeavesBlock;
-import net.minecraft.block.PillarBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.MovementType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Direction.Axis;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class TimberEntity extends FallingBlockEntity {
@@ -100,6 +91,7 @@ public class TimberEntity extends FallingBlockEntity {
         return this.isDead;
     }
 
+    /*
     @Override
     public void tick() {
         Block block = this.fallingBlock.getBlock();
@@ -193,63 +185,7 @@ public class TimberEntity extends FallingBlockEntity {
         }
     }
 
-    private boolean placeBlock(BlockState occupiedState, BlockPos currentPos) {
-        this.getWorld().breakBlock(currentPos, doTileDrops());
-        return getWorld().setBlockState(currentPos, this.fallingBlock, 3);
-    }
-
-    private boolean canPlaceBlock(BlockState occupiedState, BlockPos currentPos) {
-        return (getWorld().isInBuildLimit(currentPos) && World.isValid(currentPos))
-                || (log && occupiedState.getBlock() instanceof LeavesBlock);
-    }
-
-    private void rotateLog(BlockState state, BlockPos pos) {
-        if (isLog(state.getBlock())) {
-            Axis axis = state.get(PillarBlock.AXIS);
-
-            switch (fellingDirection.getAxis()) {
-                case X:
-                    axis = Direction.Axis.X;
-                    break;
-                case Z:
-                    axis = Direction.Axis.Z;
-                    break;
-                default:
-                    axis = Direction.Axis.Y;
-            }
-            if (axis != Direction.Axis.Y) {
-                BlockState newState = state.with(PillarBlock.AXIS, axis);
-                getWorld().setBlockState(pos, newState);
-            }
-        }
-    }
-
-    private boolean doTileDrops() {
-        return getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS);
-    }
-
-    private boolean isBlocked(BlockPos pos) {
-        BlockState state = this.getWorld().getBlockState(pos);
-        return !FallingBlock.canFallThrough(state);
-    }
-
-    private boolean canBreakThrough(BlockPos pos) {
-        BlockState state = this.getWorld().getBlockState(pos);
-        Block block = state.getBlock();
-
-        if (block instanceof CropBlock) return true;
-        if (!log) return false;
-
-        return block instanceof LeavesBlock || block instanceof CropBlock;
-    }
-
-    private void dropItems() {
-
-        ArrayList<ItemStack> itemsToDrop = new ArrayList<>();
-        itemsToDrop.addAll(this.drops);
-        itemsToDrop.forEach(d -> this.dropStack(d, 0.0F));
-
-    }
+    */
 
     public void fall(float distance, float damageMultiplier) {
         if (this.hurtEntities) {
