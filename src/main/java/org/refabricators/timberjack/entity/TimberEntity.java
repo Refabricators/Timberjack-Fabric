@@ -16,7 +16,6 @@ import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -33,7 +32,6 @@ public class TimberEntity extends FallingBlockEntity {
     private int fallHurtMax = 40;
     private float fallHurtAmount = 2.0F;
     private NbtCompound tileEntityData;
-    private ArrayList<ItemStack> drops = new ArrayList<>();
     private Direction fellingDirection = Direction.UP;
     private boolean isDead = false;
 
@@ -80,10 +78,6 @@ public class TimberEntity extends FallingBlockEntity {
 
     public BlockPos getOrigin() {
         return this.dataTracker.get(ORIGIN);
-    }
-
-    protected void entityInit() {
-        
     }
 
     @Override
