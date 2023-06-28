@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FallingBlockEntity;
@@ -31,7 +32,6 @@ public class TimberEntity extends FallingBlockEntity {
     private boolean log;
     private int fallHurtMax = 40;
     private float fallHurtAmount = 2.0F;
-    private NbtCompound tileEntityData;
     private Direction fellingDirection = Direction.UP;
     private boolean isDead = false;
 
@@ -53,6 +53,13 @@ public class TimberEntity extends FallingBlockEntity {
         this.prevZ = z;
         this.movementMultiplier = new Vec3d(0.0D, 0.0D, 0.0D);
         this.setOrigin(this.getBlockPos());
+
+        if(logBlock instanceof LeavesBlock) this.setDestroyedOnLanding();
+    }
+
+    @Override
+    public void onDestroyedOnLanding(Block block, BlockPos pos) {
+       if(block instanceof LeavesBlock) Block.dropStacks(block.getDefaultState(), this.getWorld(), pos);
     }
 
     public Vec3d getMovementMultiplier() {
