@@ -29,10 +29,10 @@ public class TimberEntity extends FallingBlockEntity {
     public static TrackedData<BlockPos> ORIGIN = DataTracker.registerData(TimberEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
     private BlockState fallingBlock = this.getBlockState();
     private boolean hurtEntities;
-    private boolean log;
+    @SuppressWarnings("unused") private boolean log;
     private int fallHurtMax = 40;
     private float fallHurtAmount = 2.0F;
-    private Direction fellingDirection = Direction.UP;
+    @SuppressWarnings("unused") private Direction fellingDirection = Direction.UP;
     private boolean isDead = false;
 
 
