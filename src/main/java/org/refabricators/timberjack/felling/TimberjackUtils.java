@@ -137,6 +137,7 @@ public class TimberjackUtils {
     }
 
     private static void spawnFalling(World world, BlockPos pos, Vec3d centroid, BlockState state, Direction fellingDirection, boolean log, Block logBlock) {
+        world.breakBlock(pos, false);
         TimberEntity entity = new TimberEntity(world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, state, fellingDirection, log, Timberjack.TIMBER_ENTITY, logBlock);
         Vec3d vector = new Vec3d(pos.getX(), 0, pos.getZ());
         vector = vector.subtract(centroid.x, 0, centroid.z);
