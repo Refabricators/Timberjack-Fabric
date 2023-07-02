@@ -1,19 +1,19 @@
 {
 	"schemaVersion": 1,
-	"id": "timberjack-refabricated",
+	"id": "timberjack-fabric",
 	"version": "${version}",
-	"name": "Timberjack Refabricated",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "Timberjack Fabric",
+	"description": "",
 	"authors": [
 		"HadronCollision",
 		"TechPro424"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/Refabricators/Timberjack-Refabricated/"
+		"homepage": "https://github.com/Refabricators/",
+		"sources": "https://github.com/Refabricators/Timberjack-Fabric/"
 	},
 	"license": "Lesser General Public License v3.0 or later",
-	"icon": "assets/timberjack-refabricated/icon.png",
+	"icon": "assets/timberjack-fabric/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [

@@ -27,7 +27,7 @@ public class JsonOperations {
         } catch (Exception e) {
             Timberjack.LOGGER.info("Error while loading config, maybe you should check the mod's config file to see if it has any syntax errors.");
             e.printStackTrace();
-            throw new RuntimeException("(timberjack-refabricated) Error while loading config, maybe you should check the mod's config file to see if it has any syntax errors.");
+            throw new RuntimeException("(timberjack-fabric) Error while loading config, maybe you should check the mod's config file to see if it has any syntax errors.");
         }
 
         return config;
