@@ -33,7 +33,6 @@ public class TimberEntity extends FallingBlockEntity {
     private int fallHurtMax = 40;
     private float fallHurtAmount = 2.0F;
     @SuppressWarnings("unused") private Direction fellingDirection = Direction.UP;
-    private boolean isDead = false;
 
 
     public TimberEntity(EntityType<? extends FallingBlockEntity> type, World world) {
@@ -53,8 +52,6 @@ public class TimberEntity extends FallingBlockEntity {
         this.prevZ = z;
         this.movementMultiplier = new Vec3d(0.0D, 0.0D, 0.0D);
         this.setOrigin(this.getBlockPos());
-
-        if(logBlock instanceof LeavesBlock) this.setDestroyedOnLanding();
     }
 
     @Override
@@ -89,104 +86,8 @@ public class TimberEntity extends FallingBlockEntity {
 
     @Override
     public boolean isCollidable() {
-        return this.isDead;
+        return true;
     }
-
-    /*
-    @Override
-    public void tick() {
-        Block block = this.fallingBlock.getBlock();
-
-        if (this.fallingBlock.isAir()) this.setDead();
-        else {
-            this.prevX = this.getX();
-            this.prevY = this.getY();
-            this.prevZ = this.getZ();
-
-            if (this.timeFalling++ == 0) {
-                BlockPos currentPos = new BlockPos(this.getBlockPos());
-
-                BlockState state = this.getWorld().getBlockState(currentPos);
-                if (state.getBlock() == block) {
-                    if (!this.getWorld().isClient()) {
-                        drops.addAll(Block.getDroppedStacks(state, (ServerWorld) getWorld(), currentPos, null));
-                    }
-                    this.getWorld().setBlockState(currentPos, Blocks.AIR.getDefaultState());
-                } else if (!this.getWorld().isClient()) {
-                    this.setRemoved(RemovalReason.DISCARDED);
-                    this.isDead = true;
-                    return;
-                }
-            }
-
-            if (!this.hasNoGravity()) {
-                this.movementMultiplier = new Vec3d(movementMultiplier.x, movementMultiplier.y - 0.03D, movementMultiplier.z);
-            }
-
-            this.move(MovementType.SELF, this.movementMultiplier);
-//            this.motionX *= 0.9800000190734863D;
-            this.movementMultiplier = new Vec3d(movementMultiplier.x, movementMultiplier.y * 0.98D, movementMultiplier.z);
-//            this.motionZ *= 0.9800000190734863D;
-
-            if (!this.getWorld().isClient()) {
-                BlockPos currentPos = new BlockPos(getBlockPos());
-
-                BlockPos belowPos = new BlockPos(this.getBlockX(), Double.valueOf(this.getBlockY() - 0.001).intValue(), this.getBlockZ());
-                if (this.isOnGround() && isBlocked(belowPos)) {
-                    if (canBreakThrough(belowPos)) {
-                        getWorld().breakBlock(belowPos, doTileDrops());
-                        return;
-                    }
-
-                    BlockState occupiedState = this.getWorld().getBlockState(currentPos);
-
-                    this.movementMultiplier = new Vec3d(0.699999988079071D, 0.699999988079071D, -0.5D);
-
-                    if (occupiedState.getBlock() != Blocks.PISTON_HEAD) {
-                        this.setRemoved(RemovalReason.DISCARDED);
-                        this.isDead = true;
-
-                        if (canPlaceBlock(occupiedState, currentPos) && isBlocked(currentPos.down())
-                                && placeBlock(occupiedState, currentPos)) {
-
-                            if (this.tileEntityData != null) {
-                                NbtCompound nbt = new NbtCompound();
-                                this.writeCustomDataToNbt(nbt);
-                                    
-
-                                for (String s : this.tileEntityData.getKeys()) {
-                                    NbtElement nbtbase = this.tileEntityData.get(s);
-
-                                    if (!"x".equals(s) && !"y".equals(s) && !"z".equals(s)) {
-                                        nbt.put(s, nbtbase.copy());
-                                    }
-                                }
-
-                                    this.readCustomDataFromNbt(nbt);            
-                            }
-
-                            BlockState state = this.getWorld().getBlockState(currentPos);
-                            if (log) {
-                                rotateLog(state, currentPos);
-                            }
-
-                        } else if (this.dropItem && doTileDrops()) {
-                            dropItems();
-                        }
-                    }
-                } else if (this.timeFalling > 100 && (currentPos.getY() < 1 || currentPos.getY() > 256) || this.timeFalling > 400) {
-                    if (this.dropItem && doTileDrops()) {
-                        dropItems();
-                    }
-
-                    this.setRemoved(RemovalReason.DISCARDED);
-                    this.isDead = true;
-                }
-            }
-        }
-    }
-
-    */
 
     public void fall(float distance, float damageMultiplier) {
         if (this.hurtEntities) {
@@ -209,7 +110,6 @@ public class TimberEntity extends FallingBlockEntity {
 
     public void setDead() {
         this.setRemoved(RemovalReason.DISCARDED);
-        this.isDead = true;
     }
 
 
@@ -227,7 +127,7 @@ public class TimberEntity extends FallingBlockEntity {
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putBoolean("hurtEntities", collidedSoftly);
+        
     }
 
     @Nullable
